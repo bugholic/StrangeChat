@@ -18,7 +18,9 @@ export const useSocket = () => {
 
   useEffect(() => {
     // Connect to server
-    const serverUrl = import.meta.env.DEV ? 'http://localhost:3001' : window.location.origin;
+    const serverUrl = import.meta.env.DEV
+      ? 'http://localhost:3001'
+      : (import.meta.env.VITE_SOCKET_SERVER_URL as string) || window.location.origin;
     socketRef.current = io(serverUrl);
 
     const socket = socketRef.current;
