@@ -17,6 +17,11 @@ const io = new Server(server, {
   }
 });
 
+const broadcastUserCount = () => {
+  const count = io.sockets.sockets.size;
+  io.emit('user-count', { count });
+};
+
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(join(__dirname, 'dist')));
@@ -32,13 +37,27 @@ const userRooms = new Map();
 
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
+  broadcastUserCount();
 
   socket.on('find-partner', () => {
-    // If there's someone waiting, pair them
-    if (waitingUsers.size > 0) {
-      const partner = waitingUsers.values().next().value;
+    // If already in a room, ignore further matchmaking requests
+    if (userRooms.has(socket.id)) {
+      return;
+    }
+
+    // Try to find a partner that is not the current socket
+    let partner = null;
+    for (const userId of waitingUsers) {
+      if (userId !== socket.id && io.sockets.sockets.has(userId)) {
+        partner = userId;
+        break;
+      }
+    }
+
+    if (partner) {
+      // Remove the chosen partner from waiting
       waitingUsers.delete(partner);
-      
+
       // Create a new room
       const roomId = uuidv4();
       const room = {
@@ -46,24 +65,31 @@ io.on('connection', (socket) => {
         users: [socket.id, partner],
         createdAt: new Date()
       };
-      
+
       activeRooms.set(roomId, room);
       userRooms.set(socket.id, roomId);
       userRooms.set(partner, roomId);
-      
+
       // Join both users to the room
       socket.join(roomId);
       io.sockets.sockets.get(partner)?.join(roomId);
-      
+
       // Notify both users that they're connected
       io.to(roomId).emit('partner-found', { roomId });
-      
+
       console.log(`Room ${roomId} created with users ${socket.id} and ${partner}`);
     } else {
-      // Add user to waiting list
+      // Add user to waiting list (Set prevents duplicates)
       waitingUsers.add(socket.id);
       socket.emit('searching');
       console.log(`User ${socket.id} added to waiting list`);
+    }
+  });
+
+  socket.on('cancel-search', () => {
+    if (waitingUsers.delete(socket.id)) {
+      socket.emit('search-cancelled');
+      console.log(`User ${socket.id} cancelled search`);
     }
   });
 
@@ -128,6 +154,7 @@ io.on('connection', (socket) => {
       activeRooms.delete(roomId);
       console.log(`Room ${roomId} deleted due to user disconnect`);
     }
+    broadcastUserCount();
   });
 });
 

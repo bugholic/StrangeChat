@@ -60,7 +60,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({ messages, onSendMessage,
               <MessageCircle className="w-4 h-4 text-white" />
             </div>
             <div>
-              <h1 className="font-semibold text-gray-800 text-sm sm:text-base">Anonymous Chat</h1>
+              <h1 className="font-semibold text-gray-800 text-sm sm:text-base">StrangeChat</h1>
               <p className="text-xs text-green-500 flex items-center">
                 <span className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
                 Connected to stranger
@@ -135,7 +135,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({ messages, onSendMessage,
             </button>
           </div>
           <p className="text-xs text-gray-400 mt-2 text-center px-2">
-            This is an anonymous chat. Be respectful and enjoy the conversation!
+            This is an StrangeChat. Be respectful and enjoy the conversation!
           </p>
         </div>
       </div>

@@ -13,6 +13,7 @@ type ConnectionState = 'disconnected' | 'searching' | 'connected' | 'chat-ended'
 export const useSocket = () => {
   const [connectionState, setConnectionState] = useState<ConnectionState>('disconnected');
   const [messages, setMessages] = useState<Message[]>([]);
+  const [userCount, setUserCount] = useState<number>(0);
   const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
@@ -52,6 +53,14 @@ export const useSocket = () => {
       setConnectionState('disconnected');
     });
 
+    socket.on('user-count', ({ count }: { count: number }) => {
+      setUserCount(count);
+    });
+
+    socket.on('search-cancelled', () => {
+      setConnectionState('disconnected');
+    });
+
     return () => {
       socket.disconnect();
     };
@@ -86,6 +95,9 @@ export const useSocket = () => {
   };
 
   const startNewChat = () => {
+    if (socketRef.current && connectionState === 'searching') {
+      socketRef.current.emit('cancel-search');
+    }
     setMessages([]);
     setConnectionState('disconnected');
   };
@@ -93,6 +105,7 @@ export const useSocket = () => {
   return {
     connectionState,
     messages,
+    userCount,
     findPartner,
     sendMessage,
     endChat,

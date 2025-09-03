@@ -1,4 +1,3 @@
-import React from 'react';
 import { useSocket } from './hooks/useSocket';
 import { WelcomeScreen } from './components/WelcomeScreen';
 import { SearchingScreen } from './components/SearchingScreen';
@@ -6,14 +5,14 @@ import { ChatScreen } from './components/ChatScreen';
 import { DisconnectedScreen } from './components/DisconnectedScreen';
 
 function App() {
-  const { connectionState, messages, findPartner, sendMessage, endChat, startNewChat } = useSocket();
+  const { connectionState, messages, userCount, findPartner, sendMessage, endChat, startNewChat } = useSocket();
 
   switch (connectionState) {
     case 'disconnected':
-      return <WelcomeScreen onStartChat={findPartner} />;
+      return <WelcomeScreen onStartChat={findPartner} userCount={userCount} />;
     
     case 'searching':
-      return <SearchingScreen onCancel={startNewChat} />;
+      return <SearchingScreen onCancel={startNewChat} userCount={userCount} />;
     
     case 'connected':
       return (
@@ -41,7 +40,7 @@ function App() {
       );
     
     default:
-      return <WelcomeScreen onStartChat={findPartner} />;
+      return <WelcomeScreen onStartChat={findPartner} userCount={userCount} />;
   }
 }
 

@@ -3,9 +3,10 @@ import { MessageCircle, Shield, Zap, Globe } from 'lucide-react';
 
 interface WelcomeScreenProps {
   onStartChat: () => void;
+  userCount?: number;
 }
 
-export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStartChat }) => {
+export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStartChat, userCount }) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
       <div className="text-center max-w-lg w-full">
@@ -15,9 +16,10 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStartChat }) => 
         </div>
         
         {/* Title */}
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-800 mb-3">
-          Anonymous Chat
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-800 mb-1">
+          StrangeChat
         </h1>
+        <p className="text-xs sm:text-sm text-gray-500 mb-3">{typeof userCount === 'number' ? `${userCount} users online now` : '\u00A0'}</p>
         <p className="text-gray-600 text-base sm:text-lg mb-8 px-4">
           Connect instantly with strangers from around the world
         </p>
