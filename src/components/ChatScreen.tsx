@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { MessageCircle, Send, X, RotateCcw } from 'lucide-react';
+import React, { useState, useEffect, useRef } from "react";
+import { MessageCircle, Send, X } from "lucide-react";
+import { useScreenSize } from "../hooks/useScreenSize";
 
 interface Message {
   id: string;
   text: string;
-  sender: 'me' | 'stranger';
+  sender: "me" | "stranger";
   timestamp: string;
 }
 
@@ -14,14 +15,19 @@ interface ChatScreenProps {
   onEndChat: () => void;
 }
 
-export const ChatScreen: React.FC<ChatScreenProps> = ({ messages, onSendMessage, onEndChat }) => {
-  const [newMessage, setNewMessage] = useState('');
+export const ChatScreen: React.FC<ChatScreenProps> = ({
+  messages,
+  onSendMessage,
+  onEndChat,
+}) => {
+  const [newMessage, setNewMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { viewportHeight } = useScreenSize();
 
   // Auto-scroll to bottom
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   // Focus input on mount
@@ -32,26 +38,29 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({ messages, onSendMessage,
   const sendMessage = () => {
     if (newMessage.trim()) {
       onSendMessage(newMessage.trim());
-      setNewMessage('');
+      setNewMessage("");
     }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
     }
   };
 
   const formatTime = (timestamp: string) => {
-    return new Date(timestamp).toLocaleTimeString([], { 
-      hour: '2-digit', 
-      minute: '2-digit' 
+    return new Date(timestamp).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
+    <div
+      className="flex flex-col bg-gray-50"
+      style={{ height: viewportHeight }}
+    >
       {/* Header */}
       <header className="bg-white shadow-sm border-b px-4 py-3 flex-shrink-0">
         <div className="flex items-center justify-between max-w-4xl mx-auto">
@@ -60,7 +69,9 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({ messages, onSendMessage,
               <MessageCircle className="w-4 h-4 text-white" />
             </div>
             <div>
-              <h1 className="font-semibold text-gray-800 text-sm sm:text-base">StrangeChat</h1>
+              <h1 className="font-semibold text-gray-800 text-sm sm:text-base">
+                StrangeChat
+              </h1>
               <p className="text-xs text-green-500 flex items-center">
                 <span className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
                 Connected to stranger
@@ -84,26 +95,34 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({ messages, onSendMessage,
             <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
               <MessageCircle className="w-8 h-8 text-gray-400" />
             </div>
-            <p className="text-gray-500 text-sm">Start the conversation! Say hello 👋</p>
+            <p className="text-gray-500 text-sm">
+              Start the conversation! Say hello 👋
+            </p>
           </div>
         )}
-        
+
         {messages.map((message) => (
           <div
             key={message.id}
-            className={`flex ${message.sender === 'me' ? 'justify-end' : 'justify-start'}`}
+            className={`flex ${
+              message.sender === "me" ? "justify-end" : "justify-start"
+            }`}
           >
             <div
               className={`max-w-[280px] sm:max-w-xs lg:max-w-md px-3 py-2 sm:px-4 sm:py-3 rounded-2xl shadow-sm ${
-                message.sender === 'me'
-                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white'
-                  : 'bg-white text-gray-800 border border-gray-200'
+                message.sender === "me"
+                  ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white"
+                  : "bg-white text-gray-800 border border-gray-200"
               }`}
             >
-              <p className="text-sm sm:text-base leading-relaxed break-words">{message.text}</p>
-              <p className={`text-xs mt-1 ${
-                message.sender === 'me' ? 'text-blue-100' : 'text-gray-400'
-              }`}>
+              <p className="text-sm sm:text-base leading-relaxed break-words">
+                {message.text}
+              </p>
+              <p
+                className={`text-xs mt-1 ${
+                  message.sender === "me" ? "text-blue-100" : "text-gray-400"
+                }`}
+              >
                 {formatTime(message.timestamp)}
               </p>
             </div>
