@@ -26,7 +26,6 @@ export const SearchingScreen: React.FC<SearchingScreenProps> = ({ onCancel, user
         
         {/* Title */}
         <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-1">StrangeChat</h1>
-        <p className="text-xs sm:text-sm text-gray-500">{typeof userCount === 'number' ? `${userCount} users online now` : '\u00A0'}</p>
         <p className="text-gray-600 text-base sm:text-lg mb-8">Connect with strangers around the world</p>
         
         {/* Searching Card */}
